@@ -21,18 +21,9 @@ export class GithubRgbContribtions extends DDDSuper(I18NMixin(LitElement)) {
   constructor() {
     super();
     this.title = "";
-    this.t = this.t || {};
-    this.t = {
-      ...this.t,
-      title: "Title",
-    };
-    this.registerLocalization({
-      context: this,
-      localesPath:
-        new URL("./locales/github-rgb-contribtions.ar.json", import.meta.url).href +
-        "/../",
-      locales: ["ar", "es", "hi", "zh"],
-    });
+    this.organization = "";
+    this.repo = "";
+    this.contributions = [];
   }
 
   // Lit reactive properties
@@ -40,6 +31,10 @@ export class GithubRgbContribtions extends DDDSuper(I18NMixin(LitElement)) {
     return {
       ...super.properties,
       title: { type: String },
+      organization: { type: String },
+      repo: { type: String },
+      contributions: { type: Array },
+      limit: { type: Number },
     };
   }
 
@@ -66,19 +61,40 @@ export class GithubRgbContribtions extends DDDSuper(I18NMixin(LitElement)) {
   // Lit render the HTML
   render() {
     return html`
-<div class="wrapper">
-  <h3><span>${this.t.title}:</span> ${this.title}</h3>
-  <slot></slot>
-</div>`;
+    <div class="wrapper">
+      <h3>${this.title}<a href="https://api.github.com/${this.organization}/${this.repo}/"></a></h3>
+    </div>
+    <div class="character-wrapper">
+      ${this.contributions.map((contribution) => html`
+        <div class="character">
+          <img src="${contribution.avatar_url}" alt="${contribution.login}" />
+          <h4>${contribution.login}</h4>
+          <p>${contribution.contributions} contributions</p>
+        </div>
+      `)}
+    </div>
+    `;
   }
 
-  /**
-   * haxProperties integration via file reference
-   */
-  static get haxProperties() {
-    return new URL(`./lib/${this.tag}.haxProperties.json`, import.meta.url)
-      .href;
+  updated(changedProperties) {
+    super.updated(changedProperties);
+    if (changedProperties.has("repos") || changedProperties.has("organization")) {
+      this.fetchContributions();
+    }
   }
+  fetchContributions() {
+    const url = `https://api.github.com/repos/${this.organization}/${this.repo}/contributors`;
+    try {
+      fetch(url).then(response => response.ok ? response.json() : {}).then(data => {
+        if (data) {
+          this.contributions = [];
+          this.contributions = data;
+        }});
+    } catch (error) {
+      console.error("Something went bad", error);
+    }
+  }
+
 }
 
 globalThis.customElements.define(GithubRgbContribtions.tag, GithubRgbContribtions);
