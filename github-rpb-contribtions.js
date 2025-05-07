@@ -11,12 +11,12 @@ import "@haxtheweb/rpg-character/rpg-character.js";
  * `github-rgb-contribtions`
  * 
  * @demo index.html
- * @element github-rgb-contribtions
+ * @element github-rpb-contribtions
  */
-export class GithubRgbContribtions extends DDDSuper(I18NMixin(LitElement)) {
+export class GithubRpbContribtions extends DDDSuper(I18NMixin(LitElement)) {
 
   static get tag() {
-    return "github-rgb-contribtions";
+    return "github-rpb-contribtions";
   }
 
   constructor() {
@@ -115,4 +115,4 @@ export class GithubRgbContribtions extends DDDSuper(I18NMixin(LitElement)) {
 
 }
 
-globalThis.customElements.define(GithubRgbContribtions.tag, GithubRgbContribtions);
+globalThis.customElements.define(GithubRpbContribtions.tag, GithubRpbContribtions);
