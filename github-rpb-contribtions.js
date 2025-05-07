@@ -77,9 +77,11 @@ export class GithubRpbContribtions extends DDDSuper(I18NMixin(LitElement)) {
     <div class="characters-wrapper">
       ${this.contributions.map((contribution) => html`
         <div class="character">
+          <a href="${contribution.html_url}">
           <rpg-character
             seed="${contribution.login}"
           ></rpg-character>
+          </a>
           <h3>${contribution.login}</h3>
         </div>
       `)}
