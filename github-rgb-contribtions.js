@@ -5,6 +5,7 @@
 import { LitElement, html, css } from "lit";
 import { DDDSuper } from "@haxtheweb/d-d-d/d-d-d.js";
 import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
+import "@haxtheweb/rpg-character/rpg-character.js";
 
 /**
  * `github-rgb-contribtions`
@@ -48,6 +49,15 @@ export class GithubRgbContribtions extends DDDSuper(I18NMixin(LitElement)) {
         background-color: var(--ddd-theme-accent);
         font-family: var(--ddd-font-navigation);
       }
+      .character {
+        width: 200px;
+        padding: var(--ddd-spacing-2);
+      }
+      .characters-wrapper {
+        display: grid;
+        grid-template-columns: repeat(5, auto);
+        grid-templayte-rows: repeat(5, auto);
+      }
       .wrapper {
         margin: var(--ddd-spacing-2);
         padding: var(--ddd-spacing-4);
@@ -64,12 +74,13 @@ export class GithubRgbContribtions extends DDDSuper(I18NMixin(LitElement)) {
     <div class="wrapper">
       <h3>${this.title}<a href="https://api.github.com/${this.organization}/${this.repo}/"></a></h3>
     </div>
-    <div class="character-wrapper">
+    <div class="characters-wrapper">
       ${this.contributions.map((contribution) => html`
         <div class="character">
-          <img src="${contribution.avatar_url}" alt="${contribution.login}" />
-          <h4>${contribution.login}</h4>
-          <p>${contribution.contributions} contributions</p>
+          <rpg-character
+            seed="${contribution.login}"
+          ></rpg-character>
+          <h3>${contribution.login}</h3>
         </div>
       `)}
     </div>
@@ -78,7 +89,7 @@ export class GithubRgbContribtions extends DDDSuper(I18NMixin(LitElement)) {
 
   updated(changedProperties) {
     super.updated(changedProperties);
-    if (changedProperties.has("repos") || changedProperties.has("organization")) {
+    if (changedProperties.has("repos") || changedProperties.has("organization") || changedProperties.has("limit")) {
       this.fetchContributions();
     }
   }
@@ -86,10 +97,17 @@ export class GithubRgbContribtions extends DDDSuper(I18NMixin(LitElement)) {
     const url = `https://api.github.com/repos/${this.organization}/${this.repo}/contributors`;
     try {
       fetch(url).then(response => response.ok ? response.json() : {}).then(data => {
-        if (data) {
-          this.contributions = [];
-          this.contributions = data;
-        }});
+       
+          if (data) {
+            this.contributions = [];
+            this.contributions.length = this.limit;
+            for (let i = 0; i < this.limit; i++) {
+              this.contributions[i] = data[i];
+            };
+            console.log("Contributions", this.contributions);
+          }
+        
+      });
     } catch (error) {
       console.error("Something went bad", error);
     }
