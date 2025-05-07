@@ -83,6 +83,7 @@ export class GithubRpbContribtions extends DDDSuper(I18NMixin(LitElement)) {
           ></rpg-character>
           </a>
           <h3>${contribution.login}</h3>
+          <p>Contributions: ${contribution.contributions}</p>
         </div>
       `)}
     </div>
